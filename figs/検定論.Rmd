@@ -1,0 +1,168 @@
+---
+title: "検定論"
+output: html_document
+---
+
+
+```{r}
+# 事前処理
+library(ggplot2)
+library(latex2exp)
+library(gridExtra)
+```
+
+
+## 棄却域と採択域
+
+### 両側検定・片側検定
+
+```{r}
+after_bin <- theme_minimal() + 
+  theme(
+        axis.title.x = element_blank(), axis.title.y = element_blank(), # 軸のラベル消去
+        axis.text.x = element_blank(), axis.text.y = element_blank()  # 各軸の目盛り消去
+        )
+        
+```
+
+```{r}
+a = 1.96
+
+dnorm_limit <- function(x) {
+  y <- dnorm(x)
+  y[-a < x & x < a] <- NA
+  return(y)
+}
+
+plot_01 <- ggplot(data.frame(x=c(-3, 3)), aes(x=x)) +
+  after_bin +
+  stat_function(fun=dnorm_limit, geom="area", fill="blue", alpha=0.2) +
+  stat_function(fun=dnorm) +
+  annotate("text", x=0, y=0.47, label="採択域", size=6) +
+  annotate("text", x=0, y=0.13, label=TeX('$1-\\alpha$'), size=6) +
+  annotate("text", x=2.5, y=0.46, label="棄却域", size=6) +
+  annotate("text", x=2.5, y=0.13, label=TeX('$\\alpha/2$'), size=6) +
+  geom_segment(aes(x=2.5, y=0.11, xend=2.2, yend=0.015), arrow=arrow(length=unit(0.1, "inches"))) +
+  annotate("text", x=-2.5, y=0.46, label="棄却域", size=6) +
+  annotate("text", x=-2.5, y=0.13, label=TeX('$\\alpha/2$'), size=6) +
+  geom_segment(aes(x=-2.5, y=0.11, xend=-2.2, yend=0.015), arrow=arrow(length=unit(0.1, "inches"))) +
+  geom_segment(aes(x=a, y=0, xend=a, yend=0.48), linetype="dashed") +
+  geom_segment(aes(x=-3, y=.43, xend=-a, yend=.43), arrow=arrow(type='closed', length=unit(0.14, "inches"))) +
+  annotate("text", x=a, y=0.5, label=TeX('$T_{\\alpha/2}$'), size=6) +
+  geom_segment(aes(x=-a, y=0, xend=-a, yend=0.48), linetype="dashed") +
+  geom_segment(aes(x=-a, y=.43, xend=a, yend=.43), arrow=arrow(type='closed', ends="both", length=unit(0.14, "inches"))) +
+  annotate("text", x=-a, y=0.5, label=TeX('$T_{1-\\alpha/2}$'), size=6) +
+  geom_segment(aes(x=3, y=.43, xend=a, yend=.43), arrow=arrow(type='closed', length=unit(0.14, "inches"))) +
+  geom_segment(aes(x=-3, y=0, xend=3, yend=0), arrow=arrow(type = 'closed', length=unit(0.14, "inches")))
+
+plot_01
+```
+
+```{r}
+a = 1.64
+
+dnorm_limit <- function(x) {
+  y <- dnorm(x)
+  y[-a < x] <- NA
+  return(y)
+}
+
+plot_02 <- ggplot(data.frame(x=c(-3, 3)), aes(x=x)) +
+  after_bin +
+  stat_function(fun=dnorm_limit, geom="area", fill="blue", alpha=0.2) +
+  stat_function(fun=dnorm) +
+  annotate("text", x=0, y=0.13, label=TeX('$1-\\alpha$'), size=6) +
+  annotate("text", x=-2.5, y=0.13, label=TeX('$\\alpha$'), size=6) +
+  geom_segment(aes(x=-2.5, y=0.11, xend=-2, yend=0.025), arrow=arrow(length=unit(0.1, "inches"))) +
+  annotate("text", x=(3-a)/2, y=0.47, label="採択域", size=6) +
+  geom_segment(aes(x=3, y=.43, xend=-a, yend=.43), arrow=arrow(type='closed', length=unit(0.14, "inches"))) +
+  annotate("text", x=(-3-a)/2, y=0.47, label="棄却域", size=6) +
+  geom_segment(aes(x=-3, y=.43, xend=-a, yend=.43), arrow=arrow(type='closed', length=unit(0.14, "inches"))) +
+  geom_segment(aes(x=-a, y=0, xend=-a, yend=0.48), linetype="dashed") +
+  annotate("text", x=-a, y=0.5, label=TeX('$T_{1-\\alpha}$'), size=6) +
+  geom_segment(aes(x=-3, y=0, xend=3, yend=0), arrow=arrow(type = 'closed', length=unit(0.14, "inches")))
+
+plot_02
+```
+
+
+```{r}
+a = 1.64
+
+dnorm_limit <- function(x) {
+  y <- dnorm(x)
+  y[x < a] <- NA
+  return(y)
+}
+
+plot_03 <- ggplot(data.frame(x=c(-3, 3)), aes(x=x)) +
+  after_bin +
+  stat_function(fun=dnorm_limit, geom="area", fill="blue", alpha=0.2) +
+  stat_function(fun=dnorm) +
+  annotate("text", x=0, y=0.13, label=TeX('$1-\\alpha$'), size=6) +
+  annotate("text", x=2.5, y=0.13, label=TeX('$\\alpha$'), size=6) +
+  geom_segment(aes(x=2.5, y=0.11, xend=2, yend=0.025), arrow=arrow(length=unit(0.1, "inches"))) +
+  annotate("text", x=(3+a)/2, y=0.47, label="棄却域", size=6) +
+  geom_segment(aes(x=3, y=.43, xend=a, yend=.43), arrow=arrow(type='closed', length=unit(0.14, "inches"))) +
+  annotate("text", x=(-3+a)/2, y=0.47, label="採択域", size=6) +
+  geom_segment(aes(x=-3, y=.43, xend=a, yend=.43), arrow=arrow(type='closed', length=unit(0.14, "inches"))) +
+  geom_segment(aes(x=a, y=0, xend=a, yend=0.48), linetype="dashed") +
+  annotate("text", x=a, y=0.5, label=TeX('$T_{\\alpha}$'), size=6) +
+  geom_segment(aes(x=-3, y=0, xend=3, yend=0), arrow=arrow(type = 'closed', length=unit(0.14, "inches")))
+
+plot_03
+```
+
+
+```{r}
+grid.arrange(
+  plot_01, plot_02, plot_03,
+  ncol = 3 # 指定した列数でに並べる
+  ) 
+```
+
+
+### 第1種の過誤・第2種の過誤
+
+```{r}
+a = 1.6
+
+dnorm_limit_1 <- function(x) {
+  y <- dnorm(x)
+  y[x < a] <- NA
+  return(y)
+}
+
+dnorm_limit_2 <- function(x) {
+  y <- dnorm(x-2)
+  y[a < x] <- NA
+  return(y)
+}
+
+
+plot_10 <- ggplot(data.frame(x=c(-3, 5)), aes(x=x)) +
+  after_bin +
+  stat_function(fun=dnorm_limit_1, geom="area", fill="blue", alpha=0.2) +
+  stat_function(fun=dnorm, args=list(mean=0, sd=1)) +
+  stat_function(fun=dnorm_limit_2, geom="area", fill="skyblue", alpha=0.2) +
+  stat_function(fun=dnorm, args=list(mean=2, sd=1)) +
+  geom_segment(aes(x=a, y=0, xend=a, yend=0.4), linetype="dashed") +
+  #annotate("text", x=.9, y=0.08, label="検出力", size=6) +
+  annotate("text", x=.9, y=0.04, label=TeX('$\\beta$'), size=6) +
+  #annotate("text", x=2.8, y=0.12, label="有意水準", size=6) +
+  annotate("text", x=2.8, y=0.08, label=TeX('$\\alpha$'), size=6) +
+  geom_segment(aes(x=2.7, y=0.06, xend=1.9, yend=0.015), arrow=arrow(length=unit(0.1, "inches"))) +
+  geom_segment(aes(x=a, y=0, xend=a, yend=0.48), linetype="dashed") +
+  annotate("text", x=a, y=0.5, label=TeX('$T_{\\alpha}$'), size=6) +
+  annotate("text", x=(a+(-3))/2, y=0.46, label="採択域", size=6) +
+  geom_segment(aes(x=-3, y=.43, xend=a, yend=.43), arrow=arrow(type='closed', ends="both", length=unit(0.14, "inches"))) +
+  annotate("text", x=(a+5)/2, y=0.46, label="棄却域", size=6) +
+  geom_segment(aes(x=5, y=.43, xend=a, yend=.43), arrow=arrow(type='closed', ends="both", length=unit(0.14, "inches"))) +
+  geom_segment(aes(x=-3, y=0, xend=5, yend=0), arrow=arrow(type='closed', length=unit(0.14, "inches")))
+
+  
+plot_10
+```
+
+
+

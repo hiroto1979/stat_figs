@@ -1,0 +1,31 @@
+---
+title: "はじめに"
+output: html_document
+---
+
+# はじめに
+
+## 用いるライブラリ
+
+ここで用いるライブラリは以下のものとする。
+
+- `ggplot2`
+- `latex2exp` : グラフにLaTeX表記を用いるためのライブラリ
+- `extrafont` : ggplot2でフォントを好きにできる。
+- `gridExtra` : ggplot2 ライブラリで作った複数のグラフを1枚にまとめる   
+[https://id.fnshr.info/2016/10/10/gridextra/](https://id.fnshr.info/2016/10/10/gridextra/)
+- `ggpattern` : 網掛けなど(現状はいらないので、あとで)
+
+
+
+## テーマ
+
+`theme_bw()`
+`theme_classic()`
+
+## 参考
+
+- ggplot2を使って、注釈を入れる-1  
+[https://mukkujohn.hatenablog.com/entry/2016/09/28/223957](https://mukkujohn.hatenablog.com/entry/2016/09/28/223957)
+- ggpatternでggplot2の色分けをパターンや網掛けに変えて白黒対応させる＆ついでにセンター地理のグラフを再現（おまけで模擬問題も作る）  
+[https://qiita.com/ocean_f/items/2b7243e4e19231d27713](https://qiita.com/ocean_f/items/2b7243e4e19231d27713)

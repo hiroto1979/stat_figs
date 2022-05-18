@@ -1,0 +1,41 @@
+---
+title: "標本分布"
+output: html_document
+---
+
+```{r}
+# 事前処理
+library(ggplot2)
+library(latex2exp)
+library(gridExtra)
+```
+
+## R Markdown
+
+まずはガンマ分布のshapeパラメータを1,3、rateパラメータを0.5, 1, 2で振って描いた例です。
+
+```{r}
+ab <- expand.grid(a=c(1, 3), b=c(.5, 1, 2))
+p <- ggplot(data.frame(X=c(0, 6)), aes(x=X)) +
+  mapply(
+    function(a, b, co) stat_function(fun=dgamma, args=list(shape=a, rate=b), aes_q(color=co)),
+    ab$a, ab$b, sprintf("a=%.0f b=%.1f", ab$a, ab$b)
+  )
+p <- p + labs(color="parameter")
+
+p
+```
+
+次にガンマ分布でshapeパラメータは5で固定して、rateパラメータを0.5～10で0.5刻みで変化させたものを描きます。
+
+```{r}
+b <- seq(.5, 10, by=.5)
+p <- ggplot(data.frame(X=c(0, 6)), aes(x=X)) +
+  mapply(
+    function(a, b, co) stat_function(fun=dgamma, args=list(shape=a, rate=b), aes_q(color=co)),
+    5, b, b
+  )
+p <- p + labs(color="b")
+
+p
+```
